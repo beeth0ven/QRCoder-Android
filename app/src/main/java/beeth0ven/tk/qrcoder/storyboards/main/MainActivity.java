@@ -1,31 +1,30 @@
 package beeth0ven.tk.qrcoder.storyboards.main;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.EditText;
-import android.widget.ImageView;
-import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxTextView;
-
-import java.util.concurrent.TimeUnit;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 
 import beeth0ven.tk.qrcoder.R;
+import beeth0ven.tk.qrcoder.exframeworks.foundation.Stream;
+import beeth0ven.tk.qrcoder.exframeworks.foundation.tuples.Tuple;
 import beeth0ven.tk.qrcoder.exframeworks.ui.base.BaseActivity;
-import beeth0ven.tk.qrcoder.internal.exframeworks.zxing.ExImage;
+import beeth0ven.tk.qrcoder.exframeworks.ui.tabviewpager.TabViewPagerPresenter;
+import beeth0ven.tk.qrcoder.storyboards.create.CreateQRCodeFragment;
+import beeth0ven.tk.qrcoder.storyboards.scan.ScanQRCodeFragment;
 import butterknife.BindView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MainActivity";
 
-    @BindView(R.id.editText)
-    EditText editText;
-    @BindView(R.id.imageView)
-    ImageView imageView;
+    @BindView(R.id.tabLayout)
+    TabLayout tabLayout;
+    @BindView(R.id.viewPager)
+    ViewPager viewPager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setup();
@@ -33,20 +32,38 @@ public class MainActivity extends BaseActivity {
         setupRxAction();
     }
 
+
     private void setup() {
+
+        TabViewPagerPresenter.setup(getSupportFragmentManager(), tabLayout, viewPager, Stream.asList(
+                Tuple.create(new ScanQRCodeFragment(), "Scan"),
+                Tuple.create(new CreateQRCodeFragment(), "Create")
+        ));
+
     }
 
     private void setupRxUI() {
-
-        disposables.add(RxTextView.textChanges(editText)
-                .map(CharSequence::toString)
-                .filter(string -> !string.isEmpty())
-                .debounce(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
-                .map(ExImage::qrcode)
-                .subscribe(imageView::setImageBitmap));
+        setTitle("Scan");
     }
 
     private void setupRxAction() {
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                setTitle(tab.getText());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
     }
 

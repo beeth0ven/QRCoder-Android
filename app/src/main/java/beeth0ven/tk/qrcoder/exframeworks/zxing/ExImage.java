@@ -1,4 +1,4 @@
-package beeth0ven.tk.qrcoder.internal.exframeworks.zxing;
+package beeth0ven.tk.qrcoder.exframeworks.zxing;
 
 
 import android.graphics.Bitmap;
